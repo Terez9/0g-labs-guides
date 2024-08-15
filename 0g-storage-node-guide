@@ -1,1 +1,137 @@
-1
+# Deploying Your 0G Storage Node
+
+This guide provides a comprehensive walkthrough to help you deploy your 0G Storage Node, one of the critical components of the 0G System.
+
+## Prerequisites
+
+Before diving into the setup, ensure that you have the following:
+
+- **Storage Node**
+- **Storage Node CLI**
+
+The 0G Storage Node interacts with on-chain contracts for blob root verification and PoRA (Proof of Retrievability and Availability) mining.
+
+For the official contract addresses, please refer to the relevant documentation.
+
+## Hardware Requirements
+
+To successfully deploy a Storage Node, your system should meet these minimum hardware specifications:
+
+- **Memory**: 16 GB RAM
+- **Processor**: 4 CPU cores
+- **Storage**: 500GB / 1TB NVMe SSD
+- **Network Bandwidth**: 500 MBps for both download and upload
+
+## Step 1: Installing Required Dependencies
+
+First, you need to install the necessary dependencies depending on your operating system.
+
+### For Linux:
+
+Update your package index and install the required tools:
+
+```bash
+sudo apt-get update
+sudo apt-get install clang cmake build-essential
+```
+
+### For macOS:
+
+Use Homebrew to install the dependencies:
+
+```bash
+brew install llvm cmake
+```
+
+## Step 2: Installing Rust
+
+Rust is required for building the Storage Node. Install it using the following command:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+## Step 3: Installing Go
+
+Go is another crucial component for the Storage Node. Install it according to your operating system.
+
+### For Linux:
+
+Follow these steps to install Go:
+
+```bash
+# Download the Go installer
+wget https://go.dev/dl/go1.22.0.linux-amd64.tar.gz
+
+# Extract the downloaded archive
+sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.22.0.linux-amd64.tar.gz
+
+# Update your PATH to include the Go binary
+echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.profile
+source ~/.profile
+```
+
+### For macOS:
+
+You can install Go using Homebrew:
+
+```bash
+brew install go
+```
+
+Alternatively, download the installer from [Go's official website](https://go.dev/dl/), open the downloaded package, and follow the installation prompts.
+
+## Step 4: Cloning the Source Code
+
+Once the dependencies are installed, you can clone the source code for the Storage Node:
+
+```bash
+git clone -b v0.4.0 https://github.com/0glabs/0g-storage-node.git
+```
+
+## Step 5: Building the Source Code
+
+Navigate to the directory where you cloned the repository and prepare the source code for building:
+
+```bash
+cd 0g-storage-node
+git submodule update --init
+```
+
+Build the project in release mode for optimal performance:
+
+```bash
+cargo build --release
+```
+
+## Step 6: Configuring the Storage Node
+
+The next step is to configure your Storage Node. Open and edit the `run/config.toml` file as needed. Here are some key fields you may need to configure:
+
+- **network_enr_address**: Your instance's public IP address, necessary for peer discovery.
+- **network_boot_nodes**: A list of bootstrap nodes to connect to. You can use the provided nodes or modify them with your own.
+- **log_contract_address**: The contract address for logging.
+- **mine_contract_address**: The contract address used for mining operations.
+- **blockchain_rpc_endpoint**: The RPC endpoint of the blockchain you are interacting with.
+- **log_sync_start_block_number**: The block number from which to start synchronization.
+- **miner_key**: Your private key (64 characters in length). This is required if you want to participate in PoRA mining and receive rewards.
+- **db_max_num_chunks**: The maximum number of chunks to store in the database. Each chunk is 256 bytes, so the total database size is approximately `256 * db_max_num_chunks` bytes. If this limit is reached, the node will update its shard position and store only half of the data.
+
+## Step 7: Running the Storage Service
+
+To run the Storage Node, first verify the available command line options by using:
+
+```bash
+./target/release/zgs_node -h
+```
+
+If you're participating in the testnet, you can use the provided `config-testnet.toml` configuration file:
+
+```bash
+cd run
+
+# It's recommended to use tmux or a similar tool to run the service in the background
+../target/release/zgs_node --config config-testnet.toml --miner-key <your_private_key> --blockchain-rpc-endpoint <blockchain_rpc> --db-max-num-chunks <max_chunk_num>
+```
+
+And there you go—your Storage Node is now up and running, ready to serve as a vital component of the 0G System!
