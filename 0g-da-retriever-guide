@@ -1,1 +1,74 @@
-1
+# Setting Up Your Own DA Retriever
+
+This guide will walk you through the process of setting up a DA Retriever on your machine.
+
+## Recommended Hardware Specifications
+
+To ensure optimal performance, it's recommended that your system meets the following hardware requirements:
+
+- **Memory (RAM)**: 8 GB
+- **Processor (CPU)**: Dual-core (2 cores)
+- **Network Bandwidth**: 100 MBps for both upload and download
+
+## Step 1: Install Required Dependencies
+
+Before you begin, make sure to install the necessary dependencies based on your operating system.
+
+### For Linux Users:
+
+Start by updating your package list and installing the essential tools:
+
+```bash
+sudo apt-get update
+sudo apt-get install cmake build-essential protobuf-compiler
+```
+
+### For macOS Users:
+
+Install the required tools using Homebrew:
+
+```bash
+brew install cmake
+```
+
+## Step 2: Install Rust
+
+Next, you'll need to install Rust, which is essential for building the DA Retriever:
+
+```bash
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+## Step 3: Clone the Source Code
+
+Once Rust is installed, you can download the DA Retriever source code from the official repository:
+
+```bash
+git clone https://github.com/0glabs/0g-da-retriever.git
+```
+
+## Step 4: Configuration Setup
+
+Now that you have the source code, it's time to configure the retriever according to your needs. Here are the key fields you need to configure:
+
+- **log_level**: Defines the verbosity of the logs.
+- **grpc_listen_address**: Specifies the server's address where it will listen for incoming gRPC connections.
+- **eth_rpc_endpoint**: The JSON RPC endpoint of the blockchain network you will be connecting to.
+
+You can find and modify these settings in the `run/config.toml` file.
+
+## Step 5: Build and Run the DA Retriever
+
+With everything set up, it's time to build the project in release mode for optimal performance:
+
+```bash
+cargo build --release
+```
+
+After the build is complete, you can run the retriever using the following command, making sure to reference your configuration file:
+
+```bash
+./target/release/retriever --config ./run/config.toml
+```
+
+And that's it! Your DA Retriever should now be up and running, ready to interact with the blockchain network.
